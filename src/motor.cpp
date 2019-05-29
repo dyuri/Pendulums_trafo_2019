@@ -14,9 +14,9 @@ public:
 
   static void motorSetup(Motor *motors[])
   {
-    const int mot_EN_PIN[4] = {33, 32, 26, 17};
-    const int mot_Dir_PIN[4] = {22, 19, 16, 5};
-    const int mot_PWM_PIN[4] = {21, 18, 4, 27};
+    const int mot_EN_PIN[4] = {33, 32, 26, 27};
+    const int mot_Dir_PIN[4] = {22, 19, 5, 16};
+    const int mot_PWM_PIN[4] = {21, 18, 17, 4};
     const int mot_PWM_channel[4] = {1, 2, 3, 4};
 
     for (int i = 0; i < 4; i++)

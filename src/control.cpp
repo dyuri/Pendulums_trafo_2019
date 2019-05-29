@@ -47,46 +47,54 @@ public:
         {
             //Serial.println("Entered Tick");
             unsigned long current_time = millis();
-            for (int motor_id = 0; motor_id < 2; motor_id++)
+            for (int motor_id = 0; motor_id < 4; motor_id++)
             {
                 switch (state_per_motor[motor_id])
                 {
                 case 5:
-                    Serial.println("State is 5 - PERIOD INIT");
                     //PERIOD INIT
                     last_period_start_t[motor_id] = current_time;
                     update_values(motor_id); //update the calues only once at the beginning of the period
-                    state_per_motor[motor_id] = 0;
-                    Serial.println("State is 0 - PULL");
+                    if (current_drv_period_t[motor_id] != 0)
+                    {
+                        state_per_motor[motor_id] = 0;
+                        Serial.print("pendulum ");
+                        Serial.print(motor_id);
+                        Serial.println(" state 0 - PULL");
+                    }
+
                     break;
                 case 0:
-
                     // STATE PULL
                     motors[motor_id]->driveMotor(current_drv_start[motor_id], current_drv_pull_f[motor_id]);
                     if ((current_time - last_period_start_t[motor_id]) > current_drv_pull_t[motor_id])
                     {
                         state_per_motor[motor_id] = 1;
-                        Serial.println("State is 1 - HOLD");
+                        Serial.print("pendulum ");
+                        Serial.print(motor_id);
+                        Serial.println(" state 1 - HOLD");
                     }
                     break;
                 case 1:
-
                     // STATE HOLD
                     motors[motor_id]->driveMotor(current_drv_start[motor_id], current_drv_hold_f[motor_id]);
                     if (((current_time - last_period_start_t[motor_id]) > (current_drv_pull_t[motor_id] + current_drv_hold_t[motor_id])))
                     {
                         state_per_motor[motor_id] = 2;
-                        Serial.println("State is 2 - REWIND");
+                        Serial.print("pendulum ");
+                        Serial.print(motor_id);
+                        Serial.println(" state 2 - REWIND");
                     }
                     break;
                 case 2:
-
                     // STATE REW
                     motors[motor_id]->driveMotor(current_drv_start[motor_id], current_drv_rew_f[motor_id]);
                     if ((current_time - last_period_start_t[motor_id]) > (current_drv_pull_t[motor_id] + current_drv_hold_t[motor_id] + current_drv_rew_t[motor_id]))
                     {
                         state_per_motor[motor_id] = 3;
-                        Serial.println("State is 3 - WAIT");
+                        Serial.print("pendulum ");
+                        Serial.print(motor_id);
+                        Serial.println(" state 3 - WAIT");
                     }
                     break;
                 case 3:
@@ -95,7 +103,9 @@ public:
                     if ((current_time - last_period_start_t[motor_id]) >= current_drv_period_t[motor_id])
                     {
                         state_per_motor[motor_id] = 4;
-                        Serial.println("State is 4 - RESTART");
+                        Serial.print("pendulum ");
+                        Serial.print(motor_id);
+                        Serial.println(" state 4 - RESTART");
                     }
                     break;
                 case 4:
