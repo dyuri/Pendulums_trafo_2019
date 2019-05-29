@@ -140,7 +140,7 @@ void loop()
 {
   WiFiClient client = server.available();
 
-  //control.tick();
+  control.tick();
 
   if (client)
   {

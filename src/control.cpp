@@ -26,8 +26,6 @@ public:
         memcpy(recieved_drv_start, drv_start, sizeof(drv_start[0]) * 4);
         memset(values_dirty, 1, sizeof(values_dirty[0] * 4));
         first_values_recieved = 1;
-
-        //motors[3]->setMotor(1, 100); //qick test
     }
 
     void update_values(int motor_id)
@@ -39,52 +37,70 @@ public:
         current_drv_hold_f[motor_id] = recieved_drv_hold_f[motor_id];
         current_drv_rew_t[motor_id] = recieved_drv_rew_t[motor_id];
         current_drv_rew_f[motor_id] = recieved_drv_rew_f[motor_id];
-        values_dirty[motor_id] = 0;
+        //values_dirty[motor_id] = 0;
     }
 
     void tick()
     {
         if (first_values_recieved == 1)
         {
+            //Serial.println("Entered Tick");
             unsigned long current_time = millis();
             for (int motor_id = 0; motor_id < 4; motor_id++)
             {
-                if (state_per_motor[motor_id] == 5)
+                switch (state_per_motor[motor_id])
                 {
+                case 5:
+                    Serial.println("State is 5 - PERIOD INIT");
                     //PERIOD INIT
                     last_period_start_t[motor_id] = current_time;
                     update_values(motor_id); //update the calues only once at the beginning of the period
                     state_per_motor[motor_id] = 0;
-                }
-                if (state_per_motor[motor_id] == 0)
-                {
+                    break;
+                case 0:
+                    Serial.println("State is 0 - PULL");
                     // STATE PULL
                     state_per_motor[motor_id] = 1;
-                    motors[motor_id]->setMotor(current_drv_start[motor_id], current_drv_pull_f[motor_id]);
-                }
-                if (((current_time - last_period_start_t[motor_id]) % current_drv_period_t[0] > current_drv_pull_t[motor_id]) && state_per_motor[motor_id] == 1)
-                {
-                    // STATE HOLD
-                    state_per_motor[motor_id] = 2;
-                    motors[motor_id]->setMotor(current_drv_start[motor_id], current_drv_hold_f[motor_id]);
-                }
-                if (((current_time - last_period_start_t[motor_id]) % current_drv_period_t[0] > (current_drv_pull_t[motor_id] + current_drv_hold_t[motor_id])) && state_per_motor[motor_id] == 2)
-                {
-                    // STATE REW
-                    state_per_motor[motor_id] = 3;
-                    motors[motor_id]->setMotor(current_drv_start[motor_id], current_drv_rew_f[motor_id]);
-                }
-                if (((current_time - last_period_start_t[motor_id]) % current_drv_period_t[0] > (current_drv_pull_t[motor_id] + current_drv_hold_t[motor_id] + current_drv_rew_t[motor_id])) && state_per_motor[motor_id] == 3)
-                {
-                    // STATE WAIT
-                    state_per_motor[motor_id] = 4;
-                    motors[motor_id]->setMotor(0, 0);
-                }
-                if (((current_time - last_period_start_t[motor_id]) >= current_drv_period_t[0]) && state_per_motor[motor_id] == 4)
-                {
-                    // STATE RESTART PERIOD
-                    state_per_motor[motor_id] = 5;
-                    motors[motor_id]->setMotor(0, 0);
+                    motors[motor_id]->driveMotor(current_drv_start[motor_id], current_drv_pull_f[motor_id]);
+                    break;
+                case 1:
+                    Serial.println("State is 1 - HOLD");
+                    if ((current_time - last_period_start_t[motor_id]) >> current_drv_pull_t[motor_id])
+                    {
+                        // STATE HOLD
+                        state_per_motor[motor_id] = 2;
+                        motors[motor_id]->driveMotor(current_drv_start[motor_id], current_drv_hold_f[motor_id]);
+                    }
+                    break;
+                case 2:
+                    Serial.println("State is 2 - REWIND");
+                    if (((current_time - last_period_start_t[motor_id]) >> (current_drv_pull_t[motor_id] + current_drv_hold_t[motor_id])))
+                    {
+                        // STATE REW
+                        state_per_motor[motor_id] = 3;
+                        motors[motor_id]->driveMotor(current_drv_start[motor_id], current_drv_rew_f[motor_id]);
+                    }
+                    break;
+                case 3:
+                    Serial.println("State is 3 - WAIT");
+                    if ((current_time - last_period_start_t[motor_id]) >> (current_drv_pull_t[motor_id] + current_drv_hold_t[motor_id] + current_drv_rew_t[motor_id]))
+                    {
+                        // STATE WAIT
+                        state_per_motor[motor_id] = 4;
+                        motors[motor_id]->driveMotor(0, 0);
+                    }
+                    break;
+                case 4:
+                    Serial.println("State is 4 - RESTART");
+                    if ((current_time - last_period_start_t[motor_id]) >= current_drv_period_t[0])
+                    {
+                        // STATE RESTART PERIOD
+                        state_per_motor[motor_id] = 5;
+                        motors[motor_id]->driveMotor(0, 0);
+                    }
+                    break;
+                default:
+                    break;
                 }
             }
         }
