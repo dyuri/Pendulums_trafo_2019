@@ -1,9 +1,16 @@
-#include <motor.cpp>
+#include <hardware.cpp>
 
 class Control
 {
 private:
     Motor *motors[4];
+    const int mot_EN_PIN[4] = {33, 32, 26, 27};
+    const int mot_Dir_PIN[4] = {22, 19, 5, 16};
+    const int mot_PWM_PIN[4] = {21, 18, 17, 4};
+    const int mot_PWM_channel[4] = {1, 2, 3, 4};
+    LED *LED1;
+    const int led_PIN = 2;
+    const int led_PWM_channel = 0;
     int recieved_drv_period_t[4], recieved_drv_pull_t[4], recieved_drv_pull_f[4], recieved_drv_hold_t[4], recieved_drv_hold_f[4], recieved_drv_rew_t[4], recieved_drv_rew_f[4], recieved_drv_start[4];
     int current_drv_period_t[4], current_drv_pull_t[4], current_drv_pull_f[4], current_drv_hold_t[4], current_drv_hold_f[4], current_drv_rew_t[4], current_drv_rew_f[4], current_drv_start[4];
     int state_per_motor[4] = {5, 5, 5, 5};
@@ -13,7 +20,8 @@ private:
 public:
     Control()
     {
-        Motor::motorSetup(motors);
+        Motor::motorSetup(4, motors, mot_EN_PIN, mot_Dir_PIN, mot_PWM_PIN, mot_PWM_channel);
+        LED1 = new LED(led_PIN, led_PWM_channel);
     }
 
     void receivedMessage(int drv_period_t[], int drv_pull_t[], int drv_pull_f[], int drv_hold_t[], int drv_hold_f[], int drv_rew_t[], int drv_rew_f[], int drv_start[])
@@ -43,6 +51,8 @@ public:
     void tick()
     {
         current_time = millis();
+        LED1->driveLED(current_time % 1000);
+
         for (int motor_id = 0; motor_id < 4; motor_id++)
         {
             switch (state_per_motor[motor_id])
@@ -51,7 +61,7 @@ public:
                 //PERIOD INIT
                 last_period_start_t[motor_id] = current_time;
                 update_values(motor_id); //update the calues only once at the beginning of the period
-                if (current_drv_period_t[motor_id] != 0 || current_drv_start[motor_id != 0])
+                if ((current_drv_period_t[motor_id] != 0) && (current_drv_start[motor_id] != 0))
                 {
                     state_per_motor[motor_id] = 0;
                     Serial.print("pendulum ");
@@ -83,7 +93,7 @@ public:
                 }
                 break;
             case 2:
-                // STATE REW
+                // STATE REWIND
                 motors[motor_id]->driveMotor(current_drv_start[motor_id], current_drv_rew_f[motor_id]);
                 if ((current_time - last_period_start_t[motor_id]) > (current_drv_pull_t[motor_id] + current_drv_hold_t[motor_id] + current_drv_rew_t[motor_id]))
                 {
