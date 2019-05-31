@@ -44,5 +44,5 @@ Set parameters per pendulum:
 ```
 http://[ip]/set/pendulum/[pendulum_id],[period_t],[pull_t],[pull_f],[hold_t],[hold_f],[rew_t],[rew_f],[start]
 # example
-http://[ip]/set/pendulum/0,10,20,30,40,50,60,70,1
+http://192.168.137.158/set/pendulum/2,8000,1000,70,2000,30,1000,-40,1
 ```
