@@ -46,3 +46,10 @@ http://[ip]/set/pendulum/[pendulum_id],[period_t],[pull_t],[pull_f],[hold_t],[ho
 # example
 http://192.168.137.158/set/pendulum/2,8000,1000,70,2000,30,1000,-40,1
 ```
+! pendulum parameters are updated at the end of the period. Start and stop also applies only after finishing a full cycle
+
+##Hardware
+
+- motor input voltage 12V
+- max. current per motor ~15A
+- ESP is powered from USB
