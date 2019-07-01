@@ -280,10 +280,12 @@ void loop()
     LED1->driveLED(1000);
 
     // set IP address
+    /*
     if (!WiFi.config(local_IP, gateway, subnet))
     {
       Serial.println("STA Failed to configure");
     }
+    */
   }
   if (WiFi.status() == WL_CONNECTED && connection_found == 0)
   {
