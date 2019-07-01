@@ -4,6 +4,7 @@
 #include <ESPmDNS.h>
 #include <control.cpp>
 #include <hardware.cpp>
+#include <ESPmDNS.h>
 
 // Replace with your network credentials
 // const char* ssid     = "pendulum";
