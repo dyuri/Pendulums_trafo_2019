@@ -2,12 +2,15 @@
 #include <WiFi.h>
 #include <control.cpp>
 #include <Arduino.h>
+#include <ESPmDNS.h>
 
 // Replace with your network credentials
-const char *ssid = "ROBERT_X250";
-const char *password = "11221122";
-// const char* ssid     = "soda_and_code";
-// const char* password = "5GmO2vpSVau8";
+// const char* ssid     = "pendulum";
+// const char* password = "cicacicacica";
+const char* ssid     = "soda_and_code";
+const char* password = "5GmO2vpSVau8";
+
+const char* name     = "pen-motor";
 
 // Set web server port number to 80
 WiFiServer server(80);
@@ -17,13 +20,11 @@ String header;
 String strParam;
 
 // Set your Static IP address
-IPAddress local_IP(192, 168, 137, 157);
-IPAddress gateway(192, 168, 137, 1);
+/*
+IPAddress local_IP(192, 168, 123, 100);
+IPAddress gateway(192, 168, 123, 1);
 IPAddress subnet(255, 255, 255, 0);
-// IPAddress local_IP(192, 168, 220, 122);
-// IPAddress gateway(192, 168, 222, 254);
-// IPAddress subnet(255, 255, 0, 0);
-
+*/
 
 // driver parameters
 const int DRVNR = 4;
@@ -55,16 +56,22 @@ void setup()
   }
 
   // set IP address
-  //if (!WiFi.config(local_IP, gateway, subnet))
-  {
-  //  Serial.println("STA Failed to configure");
+  /*
+  if (!WiFi.config(local_IP, gateway, subnet)) {
+    Serial.println("STA Failed to configure");
   }
+  */
 
   // Print local IP address and start web server
   Serial.println("");
   Serial.println("WiFi connected.");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+
+  if (!MDNS.begin(name)) {
+    Serial.println("Error setting mdns responder!");
+  }
+
   server.begin();
 }
 
