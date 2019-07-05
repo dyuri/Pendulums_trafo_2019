@@ -31,14 +31,14 @@ http://[ip]/set/pull_t/10,20,30,40
 ```
 Where [parameter] can be:
 
-- period_t
-- pull_t
-- pull_f
-- hold_t
-- hold_f
-- rew_t
-- rew_f
-- start
+- `period_t` - period
+- `pull_t` - pull time
+- `pull_f` - pull force
+- `hold_t` - hold time
+- `hold_f` - hold force
+- `rew_t` - rewind time
+- `rew_f` - rewind force
+- `start` - 0: stop, 1-5: cycle every `nth` period
 
 Set parameters per pendulum:
 ```
@@ -47,6 +47,20 @@ http://[ip]/set/pendulum/[pendulum_id],[period_t],[pull_t],[pull_f],[hold_t],[ho
 http://192.168.137.158/set/pendulum/2,8000,1000,70,2000,30,1000,-40,1
 ```
 ! pendulum parameters are updated at the end of the period. Start and stop also applies only after finishing a full cycle
+
+Start pendulum:
+```
+http://[ip]/start/[pendulum_id],[start]
+# example
+http://192.168.137.158/start/0,1
+```
+
+Stop pendulum:
+```
+http://[ip]/stop/[pendulum_id]
+# example
+http://192.168.137.158/stop/0
+```
 
 ##Hardware
 

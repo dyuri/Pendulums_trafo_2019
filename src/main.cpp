@@ -114,6 +114,31 @@ void parse_params(int *arr, String param, int len)
   }
 }
 
+void start_pendulum(String param)
+{
+  int params[2] = {0, 1};
+
+  parse_params(params, param, 2);
+  int pid = params[0];
+  int periods = params[1];
+  if (pid >= DRVNR)
+    return;
+
+  drv_start[pid] = periods;
+}
+
+void stop_pendulum(String param)
+{
+  int params[1] = {0};
+
+  parse_params(params, param, 1);
+  int pid = params[0];
+  if (pid >= DRVNR)
+    return;
+
+  drv_start[pid] = 0;
+}
+
 void set_param(int *arr, String param)
 {
   parse_params(arr, param, DRVNR);
@@ -210,6 +235,12 @@ void loop()
             strParam = get_param_from_header(header, "/set/pendulum/");
             if (strParam != "")
               set_pendulum_param(strParam);
+            strParam = get_param_from_header(header, "/start/");
+            if (strParam != "")
+              start_pendulum(strParam);
+            strParam = get_param_from_header(header, "/stop/");
+            if (strParam != "")
+              stop_pendulum(strParam);
 
             client.println("{\"params\": {");
 
