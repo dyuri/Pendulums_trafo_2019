@@ -62,7 +62,7 @@ http://[ip]/stop/[pendulum_id]
 http://192.168.137.158/stop/0
 ```
 
-##Hardware
+## Hardware
 
 - motor input voltage 12V
 - max. current per motor ~15A

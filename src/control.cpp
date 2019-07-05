@@ -56,14 +56,16 @@ public:
             {
             case 5:
                 //PERIOD INIT
-                last_period_start_t[motor_id] = current_time;
                 update_values(motor_id); //update the calues only once at the beginning of the period
-                if ((current_drv_period_t[motor_id] != 0) && (current_drv_start[motor_id] != 0))
-                {
-                    state_per_motor[motor_id] = 0;
-                    Serial.print("pendulum ");
-                    Serial.print(motor_id);
-                    Serial.println(" state 0 - PULL");
+                if (last_period_start_t[motor_id] == 0 || current_time - last_period_start_t[motor_id] > current_drv_start[motor_id] * current_drv_period_t[motor_id]) {
+                  last_period_start_t[motor_id] = current_time;
+                  if ((current_drv_period_t[motor_id] != 0) && (current_drv_start[motor_id] != 0))
+                  {
+                      state_per_motor[motor_id] = 0;
+                      Serial.print("pendulum ");
+                      Serial.print(motor_id);
+                      Serial.println(" state 0 - PULL");
+                  }
                 }
 
                 break;
