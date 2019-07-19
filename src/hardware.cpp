@@ -27,7 +27,7 @@ public:
 
   void driveMotor(int en, int force)
   {
-    if (en == 1)
+    if (en != 0)
     {
       digitalWrite(this->mot_EN_PIN, HIGH);
     }
