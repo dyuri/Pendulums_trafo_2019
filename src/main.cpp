@@ -7,10 +7,10 @@
 #include <ESPmDNS.h>
 
 // Replace with your network credentials
-// const char* ssid     = "pendulum";
-// const char* password = "cicacicacica";
-const char* ssid     = "soda_and_code";
-const char* password = "5GmO2vpSVau8";
+const char* ssid     = "pendulum";
+const char* password = "cicacicacica";
+// const char* ssid     = "soda_and_code";
+// const char* password = "5GmO2vpSVau8";
 
 const char* name     = "pen-motor";
 
