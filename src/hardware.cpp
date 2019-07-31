@@ -19,7 +19,7 @@ public:
       pinMode(mot_EN_PIN[i], OUTPUT);
       pinMode(mot_Dir_PIN[i], OUTPUT);
       pinMode(mot_PWM_PIN[i], OUTPUT);
-      ledcSetup(mot_PWM_channel[i], 5000, 8);
+      ledcSetup(mot_PWM_channel[i], 32000, 8);
       ledcAttachPin(mot_PWM_PIN[i], mot_PWM_channel[i]);
       motors[i] = new Motor(mot_EN_PIN[i], mot_Dir_PIN[i], mot_PWM_PIN[i], mot_PWM_channel[i]);
     }
