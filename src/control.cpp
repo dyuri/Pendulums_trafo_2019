@@ -1,5 +1,11 @@
 #include <hardware.cpp>
 
+#ifndef POWER_MODE
+const bool power_divide_mode = false;
+#else
+const bool power_divide_mode = true;
+#endif
+
 class Control
 {
 private:
@@ -57,7 +63,11 @@ public:
             case 5:
                 //PERIOD INIT
                 update_values(motor_id); //update the calues only once at the beginning of the period
-                if (last_period_start_t[motor_id] == 0 || current_time - last_period_start_t[motor_id] > current_drv_start[motor_id] * current_drv_period_t[motor_id]) {
+                if (
+                    last_period_start_t[motor_id] == 0 || // never ran
+                    current_time - last_period_start_t[motor_id] > current_drv_start[motor_id] * current_drv_period_t[motor_id] || // pause mode
+                    (power_divide_mode && current_time - last_period_start_t[motor_id] > current_drv_period_t[motor_id]) // power mode
+                    ) {
                   last_period_start_t[motor_id] = current_time;
                   if ((current_drv_period_t[motor_id] != 0) && (current_drv_start[motor_id] != 0))
                   {
@@ -71,7 +81,10 @@ public:
                 break;
             case 0:
                 // STATE PULL
-                motors[motor_id]->driveMotor(current_drv_start[motor_id], current_drv_pull_f[motor_id]);
+                motors[motor_id]->driveMotor(
+                    current_drv_start[motor_id],
+                    power_divide_mode ? current_drv_pull_f[motor_id]/current_drv_start[motor_id] : current_drv_pull_f[motor_id]
+                );
                 if ((current_time - last_period_start_t[motor_id]) > current_drv_pull_t[motor_id])
                 {
                     state_per_motor[motor_id] = 1;
@@ -82,7 +95,10 @@ public:
                 break;
             case 1:
                 // STATE HOLD
-                motors[motor_id]->driveMotor(current_drv_start[motor_id], current_drv_hold_f[motor_id]);
+                motors[motor_id]->driveMotor(
+                    current_drv_start[motor_id],
+                    power_divide_mode ? current_drv_hold_f[motor_id]/current_drv_start[motor_id] : current_drv_hold_f[motor_id]
+                );
                 if (((current_time - last_period_start_t[motor_id]) > (current_drv_pull_t[motor_id] + current_drv_hold_t[motor_id])))
                 {
                     state_per_motor[motor_id] = 2;
@@ -93,7 +109,10 @@ public:
                 break;
             case 2:
                 // STATE REWIND
-                motors[motor_id]->driveMotor(current_drv_start[motor_id], current_drv_rew_f[motor_id]);
+                motors[motor_id]->driveMotor(
+                    current_drv_start[motor_id],
+                    power_divide_mode ? current_drv_rew_f[motor_id]/current_drv_start[motor_id] : current_drv_rew_f[motor_id]
+                );
                 if ((current_time - last_period_start_t[motor_id]) > (current_drv_pull_t[motor_id] + current_drv_hold_t[motor_id] + current_drv_rew_t[motor_id]))
                 {
                     state_per_motor[motor_id] = 3;
