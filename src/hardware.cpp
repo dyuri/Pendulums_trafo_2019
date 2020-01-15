@@ -55,7 +55,7 @@ public:
 
     //define signal LED
     pinMode(this->led_PIN, OUTPUT);
-    ledcSetup(this->led_PWM_channel, 1000, 10);
+    ledcSetup(this->led_PWM_channel, 20000, 10);
     ledcAttachPin(this->led_PIN, this->led_PWM_channel);
   };
   

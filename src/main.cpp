@@ -45,7 +45,7 @@ int drv_start[DRVNR] = {0, 0, 0, 0};
 
 LED *LED1;
 const int led_PIN = 2;
-const int led_PWM_channel = 0;
+const int led_PWM_channel = 5;
 
 Control control = Control();
 
